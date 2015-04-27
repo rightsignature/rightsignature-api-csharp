@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace RightSignature
 {
-    class TemplateApi : TemplatesInterface
+    class TemplateApi : ITemplate
     {
         private OAuthRightSignature _oauth = new OAuthRightSignature();
 
@@ -79,24 +79,24 @@ namespace RightSignature
         }
 
         //Send/Prefill the prepackaged template as a document using the guid that was generated during the prepackage process.
-        public string PreFillORSendAsDocument(TemplateObj templateObj, string subject, string action = "send", string description = null, string callbackURL = null)
+        public string PreFillORSendAsDocument(string guid, string subject, string action = "send", List<Structs.Recipient> roles = null, List<Structs.MergeField> mergeFields = null, Dictionary<string, string> tags = null, int? expires_in = null, string description = null, string callbackURL = null)
         {
             string urlPath = "/api/templates.xml";
             XElement rootNode = new XElement("template");
             XDocument xml = new XDocument(rootNode);
 
             // Creates the xml body to send to API
-            rootNode.Add(new XElement("guid", templateObj.guid));
+            rootNode.Add(new XElement("guid", guid));
             rootNode.Add(new XElement("subject", subject));
             rootNode.Add(new XElement("action", action));               // Action can be 'send' or 'prefill' 
             if (description != null)
                 rootNode.Add(new XElement("description", description));
-            if (templateObj.expires_in != null)
-                rootNode.Add(new XElement("expires_in", templateObj.expires_in.ToString()));        // Must be 2, 5, 15, or 30. Otherwise, API will default it to 30 days
+            if (expires_in != null)
+                rootNode.Add(new XElement("expires_in", expires_in.ToString()));        // Must be 2, 5, 15, or 30. Otherwise, API will default it to 30 days
 
             // Create Roles XML
             XElement rolesNode = new XElement("roles");
-            foreach (DocumentObj.Recipient role in templateObj.roles)
+            foreach (Structs.Recipient role in roles)
             {
                 XElement roleNode = new XElement("role");
                 roleNode.SetAttributeValue("role_name", role.role);
@@ -108,10 +108,10 @@ namespace RightSignature
             rootNode.Add(rolesNode);
 
             // Create mergefields XML
-            if (templateObj.mergeFields != null)
+            if (mergeFields != null)
             {
                 XElement mfsNode = new XElement("merge_fields");
-                foreach (TemplateObj.MergeField mergeField in templateObj.mergeFields)
+                foreach (Structs.MergeField mergeField in mergeFields)
                 {
                     XElement mfNode = new XElement("merge_field");
                     mfNode.SetAttributeValue("merge_field_name", mergeField.name);
@@ -122,8 +122,8 @@ namespace RightSignature
                 rootNode.Add(mfsNode);
             }
 
-            if (templateObj.tags != null)
-                rootNode.Add(ApiHelper.CreateTagsXML(templateObj.tags));
+            if (tags != null)
+                rootNode.Add(ApiHelper.CreateTagsXML(tags));
             if (callbackURL != null)
                 rootNode.Add(new XElement("callback_location", callbackURL));
 

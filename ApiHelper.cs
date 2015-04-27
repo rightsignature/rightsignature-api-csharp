@@ -20,11 +20,11 @@ namespace RightSignature
         }
 
 
-        public static XElement createRolesXML(List<DocumentObj.Recipient> recipients)
+        public static XElement createRolesXML(List<Structs.Recipient> recipients)
         {
             // Create Roles XML
             XElement rolesNode = new XElement("recipients");
-            foreach (DocumentObj.Recipient recipient in recipients)
+            foreach (Structs.Recipient recipient in recipients)
             {
                 XElement roleNode = new XElement("recipient");
                 roleNode.Add(new XElement("role", recipient.role));

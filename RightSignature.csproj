@@ -38,14 +38,13 @@
     <Compile Include="ApiHelper.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="DocumentApi.cs" />
-    <Compile Include="DocumentObj.cs" />
     <Compile Include="Example.cs" />
-    <Compile Include="DocumentsInterface.cs" />
+    <Compile Include="IDocument.cs" />
     <Compile Include="oAuthBase.cs" />
     <Compile Include="oAuthRightSignature.cs" />
+    <Compile Include="Structs.cs" />
     <Compile Include="TemplateApi.cs" />
-    <Compile Include="TemplateObj.cs" />
-    <Compile Include="TemplatesInterface.cs" />
+    <Compile Include="ITemplate.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
