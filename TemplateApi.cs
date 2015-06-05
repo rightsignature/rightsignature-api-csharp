@@ -74,8 +74,7 @@ namespace RightSignature
 
         public string GetPrepackagedGuid(string document)
         {
-            XDocument xmlDocument = new XDocument(document);
-            return xmlDocument.Element("template").Element("guid").Value;
+            return ApiHelper.getGuid(document, "template");
         }
 
         //Send/Prefill the prepackaged template as a document using the guid that was generated during the prepackage process.

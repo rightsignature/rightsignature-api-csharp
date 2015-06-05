@@ -99,6 +99,13 @@ namespace RightSignature
                 mergeFieldNamesXml.Add(new XElement("name", mergeField));
             }
             return mergeFieldNamesXml;
-        }      
+        }
+        //extract the guid from the document
+        //type = document or template
+        public static string getGuid(string document, string type)
+        {
+            XDocument xmlDocument = XDocument.Parse(document);
+            return xmlDocument.Element(type).Element("guid").Value;
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace RightSignature
 
         private static string _token;
         private static string _tokenSecret;
-
+        
         #region PublicProperties
         public static string Token { get { return _token; } set { _token = value; } }
         public static string TokenSecret { get { return _tokenSecret; } set { _tokenSecret = value; } }
@@ -27,13 +27,14 @@ namespace RightSignature
         public void _initialize()
         {
             String requestToken = this.getRequestToken();
-
+           
             Console.WriteLine(this.AuthorizationLink);
             Console.WriteLine("Visit the link above to authorize and then paste the oauth_verifier value here and hit ENTER:");
             String verifier = Console.ReadLine();
 
             this.setVerifier(verifier);
             String accessToken = this.getAccessToken();
+            Console.WriteLine(_getHeader("https://staging.rightsignaturedev.com/api/documents.xml","GET"));
         }
 
         /// <summary>
@@ -53,13 +54,13 @@ namespace RightSignature
                     ret = Token;
                 }
             }
-            return ret;
+            return ret;        
         }
 
         /// <summary>
         /// Get the access token
         /// </summary>
-        /// <returns>The access token.</returns>
+        /// <returns>The access token.</returns>        
         public String getAccessToken() {
             if (string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(Verifier))
             {
@@ -82,9 +83,9 @@ namespace RightSignature
                 }
             }
 
-            return Token;
+            return Token;        
         }
-
+        
         public void setVerifier(string _verifier)
         {
             Verifier = _verifier;
@@ -148,7 +149,7 @@ namespace RightSignature
 
             string nonce = this.GenerateNonce();
             string timeStamp = this.GenerateTimeStamp();
-
+            
             string callback = "";
             if (url.ToString().Contains(Configuration.RequestTokenUrl))
                 callback = Configuration.CallbackUrl;
@@ -183,7 +184,7 @@ namespace RightSignature
 
             if (method == Method.POST || method == Method.GET)
                 ret = WebRequest(method, outUrl + querystring, postData);
-
+                
             return ret;
         }
 
@@ -215,7 +216,7 @@ namespace RightSignature
 
                 webRequest.PreAuthenticate = true;
                 webRequest.ServicePoint.Expect100Continue = false;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+                //ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
                 string header = _getHeader(url, method);
                 webRequest.Headers.Add("Authorization", header);
             }

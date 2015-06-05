@@ -27,7 +27,7 @@ namespace RightSignature
         //A URI encoded URL that specifies the location we will POST a callback notification to when the document has been created.
         //use_text_tags (optional)
         //(true/false) A node specifying that the Document should parse for Text Tags. 
-        string SendDocument(string type, string url, string subject, string fileName = "", Dictionary<string, string> tags = null, List<Structs.Recipient> recipients = null, string description = null, int? expires = null, string action = "send", string callback_location = null, string use_text_tags = null);
+        string SendDocument(string type, string url, string subject, string fileName = "", Dictionary<string, string> tags = null, List<Structs.Recipient> recipients = null, string description = null, int? expires = null, string action = "send", string callback_location = null, string use_text_tags = null, bool embedded_signing = false);
        
         //Get all documents created by the user for that account
         //page (optional)
@@ -60,6 +60,9 @@ namespace RightSignature
         //Update the tags on a given document. All old tags are removed.
         //Params: Document guid to update the tags, Dictionary of new tags(name, value)
         string UpdateDocumentTags(string guid, Dictionary<string, string> tags);
+
+        string getSignerLinks(string guid);
+
     }
 
 }

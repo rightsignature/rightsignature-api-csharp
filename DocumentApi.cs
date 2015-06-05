@@ -15,7 +15,7 @@ namespace RightSignature
         // Send document: 
         //filename, url and type are non optional params and must be set in the document object
 
-        public string SendDocument(string type, string url, string subject, string fileName = "", Dictionary<string, string> tags = null, List<Structs.Recipient> recipients = null, string description = null, int? expires = null, string action = "send", string callback_location = null, string use_text_tags = null)
+        public string SendDocument(string type, string url, string subject, string fileName = "", Dictionary<string, string> tags = null, List<Structs.Recipient> recipients = null, string description = null, int? expires = null, string action = "send", string callback_location = null, string use_text_tags = null, bool embedded_signing = false)
         {
             XElement rootNode = new XElement("document");
             XDocument xml = new XDocument(rootNode);
@@ -52,11 +52,46 @@ namespace RightSignature
             if (callback_location != null)
                 rootNode.Add(new XElement("callback_location", callback_location));
             if (use_text_tags != null)
-                rootNode.Add(new XElement("use_text_tags", use_text_tags));         
-           
-            return _oauth.APIWebRequest("POST", "/api/documents.xml", xml.ToString());
-        }
+                rootNode.Add(new XElement("use_text_tags", use_text_tags));
 
+            string documentSentXml = _oauth.APIWebRequest("POST", "/api/documents.xml", xml.ToString());
+            
+            if (!embedded_signing)
+            {
+                return documentSentXml;
+            }
+            else
+            {
+               string documentGuid = ApiHelper.getGuid(documentSentXml, "document");
+               return getSignerLinks(documentGuid);
+            }
+        }
+        public string getSignerLinks(string guid)
+        {
+            string urlPath = "/api/documents/" + guid + "/signer_links.xml";
+
+            string signerLinksXml = _oauth.APIWebRequest("GET", urlPath, null);
+
+            XDocument doc = XDocument.Parse(signerLinksXml);
+            XElement rootNode = new XElement("document");
+            XDocument returnXml = new XDocument(rootNode);
+            rootNode.Add(new XElement("guid", guid));
+            XElement signer_links = new XElement("signer-links");
+            
+            foreach (XElement element in doc.Element("document").Element("signer-links").Elements("signer-link"))
+            {
+                Console.WriteLine("Name: {0}; Value: {1}",
+                    (string)element.Attribute("name"),
+                    (string)element.Element( "role"));
+                XElement signer_link = new XElement("signer-link");
+                signer_link.Add(new XElement("name", (string)element.Element("name")));
+                signer_link.Add(new XElement("role", (string)element.Element("role")));
+                signer_link.Add(new XElement("link", Configuration.BaseUrl + "/signatures/embedded?rt=" + (string)element.Element("signer-token")));
+                signer_links.Add(signer_link);
+            }
+            rootNode.Add(signer_links);
+            return rootNode.ToString();
+        }
         public string GetDocuments(string query = null, string docStates = null, int? page = null, int? perPage = null, string recipientEmail = null, Dictionary<string, string> tags = null)
         {
             string urlPath = "/api/documents.xml";
@@ -116,5 +151,6 @@ namespace RightSignature
             }
             return _oauth.APIWebRequest("POST", "/api/documents/" + guid + "/update_tags.xml", tagsXml);
         }
+        
     }
 }
