@@ -38,6 +38,7 @@ namespace RightSignature
         {
             return _oauth.APIWebRequest("GET", "/api/templates" + guid + ".xml");
         }
+
         //This allows you to build a template 
         //The output document contains a redirect token which should be used in the RightSignature API to complete building the template
 
@@ -78,7 +79,7 @@ namespace RightSignature
         }
 
         //Send/Prefill the prepackaged template as a document using the guid that was generated during the prepackage process.
-        public string PreFillORSendAsDocument(string guid, string subject, string action = "send", List<Structs.Recipient> roles = null, List<Structs.MergeField> mergeFields = null, Dictionary<string, string> tags = null, int? expires_in = null, string description = null, string callbackURL = null)
+        public string PreFillORSendAsDocument(string guid, string subject, string action = "send", List<Structs.Recipient> roles = null, List<Structs.MergeField> mergeFields = null, Dictionary<string, string> tags = null, int? expires_in = null, string description = null, string callbackURL = null, bool embedded_signing = false)
         {
             string urlPath = "/api/templates.xml";
             XElement rootNode = new XElement("template");
@@ -126,9 +127,17 @@ namespace RightSignature
             if (callbackURL != null)
                 rootNode.Add(new XElement("callback_location", callbackURL));
 
-
-            // Creates HTTP Request and parses it as XDocument
-            return _oauth.APIWebRequest("POST", urlPath, xml.ToString());
+            string templateXml =  _oauth.APIWebRequest("POST", urlPath, xml.ToString());
+            if (!embedded_signing && action == "redirect")
+            {
+                // Creates HTTP Request and parses it as XDocument
+                return templateXml;
+            }
+            else
+            {
+                string templateGuid = ApiHelper.getGuid(templateXml, "document");
+                return ApiHelper.GetSignerLinks(templateGuid);
+            }
         }
     }
 }

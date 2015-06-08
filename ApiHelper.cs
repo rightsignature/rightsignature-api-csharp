@@ -12,6 +12,7 @@ namespace RightSignature
 {
     public class ApiHelper
     {
+
         public static void Initialize()
         {
             OAuthRightSignature _oauth = new OAuthRightSignature();
@@ -106,6 +107,33 @@ namespace RightSignature
         {
             XDocument xmlDocument = XDocument.Parse(document);
             return xmlDocument.Element(type).Element("guid").Value;
+        }
+        public static string GetSignerLinks(string guid)
+        {
+            string urlPath = "/api/documents/" + guid + "/signer_links.xml";
+            OAuthRightSignature _oauth = new OAuthRightSignature();
+
+            string signerLinksXml = _oauth.APIWebRequest("GET", urlPath, null);
+
+            XDocument doc = XDocument.Parse(signerLinksXml);
+            XElement rootNode = new XElement("document");
+            XDocument returnXml = new XDocument(rootNode);
+            rootNode.Add(new XElement("guid", guid));
+            XElement signer_links = new XElement("signer-links");
+
+            foreach (XElement element in doc.Element("document").Element("signer-links").Elements("signer-link"))
+            {
+                Console.WriteLine("Name: {0}; Value: {1}",
+                    (string)element.Attribute("name"),
+                    (string)element.Element("role"));
+                XElement signer_link = new XElement("signer-link");
+                signer_link.Add(new XElement("name", (string)element.Element("name")));
+                signer_link.Add(new XElement("role", (string)element.Element("role")));
+                signer_link.Add(new XElement("link", Configuration.BaseUrl + "/signatures/embedded?rt=" + (string)element.Element("signer-token")));
+                signer_links.Add(signer_link);
+            }
+            rootNode.Add(signer_links);
+            return rootNode.ToString();
         }
     }
 }

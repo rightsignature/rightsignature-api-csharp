@@ -42,8 +42,9 @@ namespace RightSignature
         //Given the output from PrePackageTemplate function, this returns the guid created for the template.
         string GetPrepackagedGuid(string document);
 
+
         //Send/Prefill the prepackaged template as a document using the guid that was generated during the prepackage process.
-        string PreFillORSendAsDocument(string guid, string subject, string action = "send", List<Structs.Recipient> roles = null, List<Structs.MergeField> mergeFields = null, Dictionary<string, string> tags = null, int? expires_in = null, string description = null, string callbackURL = null);
+        string PreFillORSendAsDocument(string guid, string subject, string action = "send", List<Structs.Recipient> roles = null, List<Structs.MergeField> mergeFields = null, Dictionary<string, string> tags = null, int? expires_in = null, string description = null, string callbackURL = null, bool embedded_signing = false);
 
     }
 }

@@ -61,8 +61,6 @@ namespace RightSignature
         //Params: Document guid to update the tags, Dictionary of new tags(name, value)
         string UpdateDocumentTags(string guid, Dictionary<string, string> tags);
 
-        string getSignerLinks(string guid);
-
     }
 
 }
