@@ -36,7 +36,7 @@ namespace RightSignature
         }
         public string GetTemplateDetails(string guid)
         {
-            return _oauth.APIWebRequest("GET", "/api/templates" + guid + ".xml");
+            return _oauth.APIWebRequest("GET", "/api/templates/" + guid + ".xml");
         }
 
         //This allows you to build a template 
